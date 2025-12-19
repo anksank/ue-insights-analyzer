@@ -1,0 +1,8 @@
+[project]
+name = "ue-insights-analyzer"
+version = "0.1.0"
+description = "A tool for analyzing Unreal Engine trace data."
+dependencies = [
+    "pandas",
+    "numpy",
+]

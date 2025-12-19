@@ -1,0 +1,60 @@
+{
+    "profiles": {
+        "low": {
+            "expected_fps": 30,
+            "frame_budget_ms": 33.33,
+            "critical_budget_ms": 29.0,
+            "critical_budget_percent": 0.87,
+            "events": {
+                "Tick Time": 11.67,
+                "Slate::Tick (Time and Widgets)": 5.0,
+                "RedrawViewports": 2.33,
+                "Frame Sync Time": 5.0,
+                "Net Tick Time": 3.33,
+                "STAT_FEngineLoop_Tick_SlateInput": 1.67
+            }
+        },
+        "mid": {
+            "expected_fps": 45,
+            "frame_budget_ms": 22.22,
+            "critical_budget_ms": 19.33,
+            "critical_budget_percent": 0.87,
+            "events": {
+                "Tick Time": 7.78,
+                "Slate::Tick (Time and Widgets)": 3.33,
+                "RedrawViewports": 1.55,
+                "Frame Sync Time": 3.33,
+                "Net Tick Time": 2.22,
+                "STAT_FEngineLoop_Tick_SlateInput": 1.11
+            }
+        },
+        "high": {
+            "expected_fps": 60,
+            "frame_budget_ms": 16.67,
+            "critical_budget_ms": 14.5,
+            "critical_budget_percent": 0.87,
+            "events": {
+                "Tick Time": 5.83,
+                "Slate::Tick (Time and Widgets)": 2.5,
+                "RedrawViewports": 1.16,
+                "Frame Sync Time": 2.5,
+                "Net Tick Time": 1.67,
+                "STAT_FEngineLoop_Tick_SlateInput": 0.84
+            }
+        },
+        "ultra": {
+            "expected_fps": 90,
+            "frame_budget_ms": 11.11,
+            "critical_budget_ms": 9.67,
+            "critical_budget_percent": 0.87,
+            "events": {
+                "Tick Time": 3.89,
+                "Slate::Tick (Time and Widgets)": 1.67,
+                "RedrawViewports": 0.78,
+                "Frame Sync Time": 1.67,
+                "Net Tick Time": 1.11,
+                "STAT_FEngineLoop_Tick_SlateInput": 0.56
+            }
+        }
+    }
+}
