@@ -19,7 +19,7 @@ def get_event_count(df, event_name_inner: str) -> int:
         raise ValueError(f"Event '{event_name_inner}' not found in dataframe")
 
 
-def main(in_trace_file, device_profile, scenario):
+def analyze_trace(in_trace_file, device_profile, scenario):
     # Load CSV
     df = load_trace_csv(in_trace_file)
 
@@ -42,7 +42,7 @@ def main(in_trace_file, device_profile, scenario):
             f" - {v.name}: {v.frame_time_ms:.2f}ms (Budget: {v.budget_ms:.2f}ms, Over: {v.over_budget_ms:.2f}ms)"
         )
 
-    # Generate Markdown report for violations
+    # Generate Markdown for performance report
     input_csv_name = Path(in_trace_file).stem
     reports_dir = project_root / "data" / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
@@ -73,11 +73,11 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
-    trace_file = sys.argv[1]
+    folder_path = sys.argv[1]
     # Parse filename: yyyymmdd_deviceprofile_scenario.csv
-    filename_stem = Path(trace_file).stem
-    parts = filename_stem.split("_")
-    trace_date = parts[0]
-    device_profile = parts[1]
-    scenario = "_".join(parts[2:]) if len(parts) > 2 else ""
-    main(trace_file, device_profile, scenario)
+    for trace_file in Path(folder_path).glob("*.csv"):
+        filename_stem = Path(trace_file).stem
+        parts = filename_stem.split("_")
+        device_profile = parts[0]
+        scenario = "_".join(parts[1:]) if len(parts) > 1 else ""
+        analyze_trace(trace_file, device_profile, scenario)
