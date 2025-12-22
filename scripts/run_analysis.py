@@ -11,139 +11,13 @@ sys.path.append(str(project_root / "src"))
 from ue_insights.pipeline import run_pipeline
 
 
-event_metadata = {
-    "base": {
-        "FEngineLoop::Tick": {
-            "Frame": {
-                "FrameTime": {
-                    "GameEngine Tick": {
-                        "UWorld_Tick": {
-                            "World Tick Time": {
-                                "Tick Time": {
-                                    "TG_PrePhysics": {},
-                                    "Start TG_DuringPhysics": {},
-                                    "TG_PostPhysics": {},
-                                    "TG_StartPhysics": {},
-                                    "TG_EndPhysics": {},
-                                    "Niagara Manager Tick [GT]": {},
-                                    "TG_PostUpdateWork": {},
-                                    "TG_LastDemotable": {}
-                                },
-                                "Net Tick Time": {},
-                                "bDoingActorTicks": {},
-                                "GT Tickable Time": {}
-                            }
-                        }
-                    },
-                    "Slate::Tick (Time and Widgets)": {
-                        "Total Slate Tick Time": {
-                            "Slate::DrawWindows": {},
-                            "PreTickEvent": {},
-                            "Slate::TickPlatform": {},
-                            "Flush End of Frame Animations": {}
-                        }
-                    },
-                    "Frame Sync Time": {}
-                }
-            }
-        },
-        "BeginFrame": {
-            "FDrawSceneCommand": {
-                "RenderViewFamily": {
-                    "STAT_FMobileSceneRenderer_Render": {
-                        "InitViews": {},
-                        "FinishRenderViewTarget": {},
-                        "STAT_ComputeLightGrid": {},
-                        "ShaderPrint::BeginView": {},
-                        "DeferredShadingSceneRenderer ViewExtensionPostRenderView": {}
-                    },
-                    "EndFlushResourcesRHI": {},
-                    "Scene::UpdateAllPrimitiveSceneInfos": {},
-                    "FRDGBuilder::ExecutePasses": {},
-                    "Collect Resources": {},
-                    "FRDGBuilder::SubmitBufferUploads": {},
-                    "FRDGBuilder::CreateUniformBuffers": {},
-                    "BeginFlushResourcesRHI": {},
-                    "Compile": {}
-                },
-                "STAT_RenderViewFamily_RenderThread_RHIGetGPUFrameCycles": {},
-                "FRDGAllocator::ReleaseAll": {}
-            },
-            "SlateDrawWindowsCommand": {},
-            "SkelMeshObjectUpdateDataCommand": {},
-            "DrawWidgetRendererImmediate": {},
-            "UpdateTransformCommand": {},
-            "HeartbeatTickTickables": {},
-            "EndFrame": {},
-            "ResetDeferredUpdates": {},
-            "BeginRenderingDebugCanvas": {},
-            "SetMIParameterValue": {},
-            "NiagaraSetDynamicData": {},
-            "TickRenderingTimer": {},
-            "RenderingFrame": {},
-            "FRemovePrimitiveCommand": {}
-        },
-        "RHI Thread Execute": {
-            "SceneEnd": {},
-            "Opaque": {},
-            "Post": {},
-            "After Occlusion Readback": {},
-            "Occlusion": {},
-            "Translucency": {},
-            "SceneStart": {},
-            "Shadows": {},
-            "SceneSimulation": {},
-            "InitViews": {
-                "View Visibility": {
-                    "ProcessVisibilityTasks": {
-                        "WaitUntilTasksComplete": {
-                            "ExecuteTask": {
-                                "FTickFunctionTask": {},
-                                "FParallelAnimationCompletionTask": {},
-                                "FNiagaraSystemInstanceFinalizeTask": {},
-                                "FSimpleDelegateGraphTask.FinishPhysicsSim": {}
-                            }
-                        },
-                        "ParallelFor": {},
-                        "OcclusionCull": {},
-                        "BeginInitVisibility 0": {},
-                        "FinalizeRelevance": {},
-                        "GatherDynamicMeshElements": {},
-                        "OcclusionSubmittedFence Wait": {},
-                        "MergeSecondaryViewVisibility": {},
-                        "Update Fading": {}
-                    }
-                },
-                "FinishVisibility": {},
-                "STAT_UpdateIndirectLightingCacheBuffer": {},
-                "ParallelMdcDispatchPassSetup": {},
-                "FinishDynamicMeshElements": {},
-                "FLandscapeSceneViewExtension::PreInitViews_RenderThread": {},
-                "GPU Dispatch Setup [RT]": {},
-                "STAT_SetupCommonViewUniformBufferParameters": {},
-                "Uniform commit time": {},
-                "STAT_PostVisibilityFrameSetup": {},
-                "FInstanceCullingManager::BeginDeferredCulling": {},
-                "Constant buffer update time": {}
-            },
-            "FXPreRender_Finalize": {},
-            "FXPreRender_Prepare": {},
-            "FXPreRender_Simulate": {},
-            "PrePass": {},
-            "AfterInitViews": {},
-            "Occlusion Readback": {}
-        }
-    }
-}
-
-
-def load_budget_config():
+def load_json_config(config_name):
     """Load budget configuration from JSON file."""
     # Assuming script is run from project_root/scripts/
-    # Config is in project_root/src/ue_insights/config/budgets.json
+    # Config is in project_root/src/ue_insights/config/
     script_dir = Path(__file__).resolve().parent
     project_root = script_dir.parent
-    config_path = project_root / "src" / "ue_insights" / "config" / "budgets.json"
+    config_path = project_root / "src" / "ue_insights" / "config" / config_name
     
     try:
         with open(config_path, "r") as f:
@@ -152,7 +26,8 @@ def load_budget_config():
         print(f"Error: Config file not found at {config_path}")
         sys.exit(1)
 
-critical_event_budget = load_budget_config()
+critical_event_budget = load_json_config("budgets.json")
+event_metadata = load_json_config("event_metadata.json")
 
 performance_metadata = [
     "FEngineLoop::Tick",
@@ -353,6 +228,16 @@ def main(in_trace_file, in_target_fps):
     for v in summary.top_violations:
         print(f" - {v.name}: {v.frame_time_ms:.2f}ms (Budget: {v.budget_ms:.2f}ms, Over: {v.over_budget_ms:.2f}ms)")
 
+    # Generate Markdown report for violations
+    markdown_report_path = "violations_report.md"
+    with open(markdown_report_path, "w", encoding="utf-8") as f:
+        f.write("# Top Performance Violations\n\n")
+        f.write("| Event Name | Frame Time (ms) | Budget (ms) | Over Budget (ms) |\n")
+        f.write("| :--- | :---: | :---: | :---: |\n")
+        for v in summary.top_violations:
+            f.write(f"| {v.name} | {v.frame_time_ms:.2f} | {v.budget_ms:.2f} | {v.over_budget_ms:.2f} |\n")
+    
+    print(f"Markdown violations report generated: {markdown_report_path}")
 
     # report_tables = []
 
