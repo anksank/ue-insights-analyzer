@@ -9,12 +9,6 @@ sys.path.append(str(project_root / "src"))
 from ue_insights.pipeline import run_pipeline  # noqa: E402
 from ue_insights.utils import load_trace_csv  # noqa: E402
 
-# ANSI color codes
-RED = "\033[91m"
-GREEN = "\033[92m"
-YELLOW = "\033[93m"
-RESET = "\033[0m"
-
 
 def get_event_count(df, event_name_inner: str) -> int:
     """Fetch the Count value for a given event name from the dataframe."""
@@ -50,7 +44,9 @@ def main(in_trace_file, device_profile):
         )
 
     for v in summary.critical_events:
-        print(f" - {v.name}: {v.frame_time_ms:.2f}ms")
+        print(
+            f" - {v.name}: {v.frame_time_ms:.2f}ms (Budget: {v.budget_ms:.2f}ms, Over: {v.over_budget_ms:.2f}ms)"
+        )
 
     # Generate Markdown report for violations
     markdown_report_path = "violations_report.md"
