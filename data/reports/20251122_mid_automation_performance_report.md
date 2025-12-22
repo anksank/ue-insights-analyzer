@@ -1,4 +1,4 @@
-# Performance report for {input_csv_name} [{scenario}]
+# Performance report for 20251122_mid_automation [automation]
 
 ## Summary of Critical Events
 | Event Name | Frame Time (ms) | Budget (ms) | Over Budget (ms) |

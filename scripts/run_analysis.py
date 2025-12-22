@@ -48,7 +48,7 @@ def main(in_trace_file, device_profile, scenario):
     reports_dir.mkdir(parents=True, exist_ok=True)
     markdown_report_path = reports_dir / f"{input_csv_name}_performance_report.md"
     with open(markdown_report_path, "w", encoding="utf-8") as f:
-        f.write("# Performance report for {input_csv_name} [{scenario}]\n\n")
+        f.write(f"# Performance report for {input_csv_name} [{scenario}]\n\n")
         f.write("## Summary of Critical Events\n")
         f.write("| Event Name | Frame Time (ms) | Budget (ms) | Over Budget (ms) |\n")
         f.write("| :--- | :---: | :---: | :---: |\n")
