@@ -62,7 +62,14 @@ def generate_consolidated_report(summaries, folder_name):
     with open(markdown_report_path, "w", encoding="utf-8") as f:
         f.write(f"# Performance Report for {folder_name}\n\n")
 
-        # Critical Events Table - Frame Time
+        # Helper function to format value with color based on over_budget
+        def format_with_color(value, over_budget):
+            if over_budget > 0:
+                return f'<span style="color:red">{value:.2f}</span>'
+            else:
+                return f'<span style="color:green">{value:.2f}</span>'
+
+        # Critical Events Table - Frame Time (with color coding)
         f.write("## Critical Events - Frame Time (ms)\n")
         f.write("| Device Profile | " + " | ".join(critical_event_names) + " |\n")
         f.write(
@@ -71,11 +78,15 @@ def generate_consolidated_report(summaries, folder_name):
         for device_profile in device_profiles:
             summary = summaries[device_profile]
             times = {v.name: v.frame_time_ms for v in summary.critical_events}
-            row = [f"{times.get(name, 0):.2f}" for name in critical_event_names]
+            over = {v.name: v.over_budget_ms for v in summary.critical_events}
+            row = [
+                format_with_color(times.get(name, 0), over.get(name, 0))
+                for name in critical_event_names
+            ]
             f.write(f"| {device_profile} | " + " | ".join(row) + " |\n")
         f.write("\n")
 
-        # Critical Events Table - Over Budget
+        # Critical Events Table - Over Budget (with color coding)
         f.write("## Critical Events - Over Budget (ms)\n")
         f.write("| Device Profile | " + " | ".join(critical_event_names) + " |\n")
         f.write(
@@ -84,11 +95,14 @@ def generate_consolidated_report(summaries, folder_name):
         for device_profile in device_profiles:
             summary = summaries[device_profile]
             over = {v.name: v.over_budget_ms for v in summary.critical_events}
-            row = [f"{over.get(name, 0):.2f}" for name in critical_event_names]
+            row = [
+                format_with_color(over.get(name, 0), over.get(name, 0))
+                for name in critical_event_names
+            ]
             f.write(f"| {device_profile} | " + " | ".join(row) + " |\n")
         f.write("\n")
 
-        # Tick Events Table
+        # Tick Events Table (no color - no budget for tick events)
         f.write("## Tick Related Events - Frame Time (ms)\n")
         f.write("| Device Profile | " + " | ".join(tick_event_names) + " |\n")
         f.write("| :---: | " + " | ".join([":---:"] * len(tick_event_names)) + " |\n")
