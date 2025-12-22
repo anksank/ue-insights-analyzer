@@ -19,7 +19,8 @@ def get_event_count(df, event_name_inner: str) -> int:
         raise ValueError(f"Event '{event_name_inner}' not found in dataframe")
 
 
-def analyze_trace(in_trace_file, device_profile, scenario):
+def analyze_trace(in_trace_file, device_profile):
+    """Analyze a single trace file and return the summary."""
     # Load CSV
     df = load_trace_csv(in_trace_file)
 
@@ -27,7 +28,6 @@ def analyze_trace(in_trace_file, device_profile, scenario):
     frame_count = get_event_count(df, "FEngineLoop::Tick")
 
     # Run the pipeline
-    # Pass None for llm_client for now as requested
     summary, _ = run_pipeline(
         csv_path=in_trace_file,
         frame_count=frame_count,
@@ -36,48 +36,87 @@ def analyze_trace(in_trace_file, device_profile, scenario):
         device_profile=device_profile,
     )
 
-    print("\nPipeline Summary:")
+    print(f"\nPipeline Summary for {device_profile}:")
     for v in summary.critical_events:
         print(
             f" - {v.name}: {v.frame_time_ms:.2f}ms (Budget: {v.budget_ms:.2f}ms, Over: {v.over_budget_ms:.2f}ms)"
         )
 
-    # Generate Markdown for performance report
-    input_csv_name = Path(in_trace_file).stem
+    return summary
+
+
+def generate_consolidated_report(summaries, folder_name):
+    """Generate a single markdown report for all device profiles."""
     reports_dir = project_root / "data" / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
-    markdown_report_path = reports_dir / f"{input_csv_name}_performance_report.md"
-    with open(markdown_report_path, "w", encoding="utf-8") as f:
-        f.write(f"# Performance report for {input_csv_name} [{scenario}]\n\n")
-        f.write("## Summary of Critical Events\n")
-        f.write("| Event Name | Frame Time (ms) | Budget (ms) | Over Budget (ms) |\n")
-        f.write("| :--- | :---: | :---: | :---: |\n")
-        for v in summary.critical_events:
-            f.write(
-                f"| {v.name} | {v.frame_time_ms:.2f} | {v.budget_ms:.2f} | {v.over_budget_ms:.2f} |\n"
-            )
-        f.write("\n")
-        f.write("## Summary of Tick Related Events\n")
-        f.write("| Event Name | Frame Time (ms) |\n")
-        f.write("| :--- | :---: |\n")
-        for v in summary.tick_events:
-            f.write(f"| {v.name} | {v.frame_time_ms:.2f} |\n")
+    markdown_report_path = reports_dir / f"{folder_name}_performance_report.md"
 
-    print(f"Performance report generated: {markdown_report_path}")
+    # Get ordered list of device profiles and event names
+    device_profiles = list(summaries.keys())
+
+    # Get critical event names from first summary (assuming all have same events)
+    first_summary = next(iter(summaries.values()))
+    critical_event_names = [v.name for v in first_summary.critical_events]
+    tick_event_names = [v.name for v in first_summary.tick_events]
+
+    with open(markdown_report_path, "w", encoding="utf-8") as f:
+        f.write(f"# Performance Report for {folder_name}\n\n")
+
+        # Critical Events Table - Frame Time
+        f.write("## Critical Events - Frame Time (ms)\n")
+        f.write("| Device Profile | " + " | ".join(critical_event_names) + " |\n")
+        f.write(
+            "| :---: | " + " | ".join([":---:"] * len(critical_event_names)) + " |\n"
+        )
+        for device_profile in device_profiles:
+            summary = summaries[device_profile]
+            times = {v.name: v.frame_time_ms for v in summary.critical_events}
+            row = [f"{times.get(name, 0):.2f}" for name in critical_event_names]
+            f.write(f"| {device_profile} | " + " | ".join(row) + " |\n")
+        f.write("\n")
+
+        # Critical Events Table - Over Budget
+        f.write("## Critical Events - Over Budget (ms)\n")
+        f.write("| Device Profile | " + " | ".join(critical_event_names) + " |\n")
+        f.write(
+            "| :---: | " + " | ".join([":---:"] * len(critical_event_names)) + " |\n"
+        )
+        for device_profile in device_profiles:
+            summary = summaries[device_profile]
+            over = {v.name: v.over_budget_ms for v in summary.critical_events}
+            row = [f"{over.get(name, 0):.2f}" for name in critical_event_names]
+            f.write(f"| {device_profile} | " + " | ".join(row) + " |\n")
+        f.write("\n")
+
+        # Tick Events Table
+        f.write("## Tick Related Events - Frame Time (ms)\n")
+        f.write("| Device Profile | " + " | ".join(tick_event_names) + " |\n")
+        f.write("| :---: | " + " | ".join([":---:"] * len(tick_event_names)) + " |\n")
+        for device_profile in device_profiles:
+            summary = summaries[device_profile]
+            times = {v.name: v.frame_time_ms for v in summary.tick_events}
+            row = [f"{times.get(name, 0):.2f}" for name in tick_event_names]
+            f.write(f"| {device_profile} | " + " | ".join(row) + " |\n")
+
+    print(f"Consolidated performance report generated: {markdown_report_path}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print(
-            "Usage: py run_analysis.py <trace_file (yyyymmdd_deviceprofile_scenario.csv)>"
-        )
+        print("Usage: py run_analysis.py <folder_path>")
         sys.exit(1)
 
-    folder_path = sys.argv[1]
-    # Parse filename: yyyymmdd_deviceprofile_scenario.csv
-    for trace_file in Path(folder_path).glob("*.csv"):
-        filename_stem = Path(trace_file).stem
+    folder_path = Path(sys.argv[1])
+    folder_name = folder_path.name
+
+    # Collect summaries from all CSV files
+    summaries = {}
+    for trace_file in folder_path.glob("*.csv"):
+        filename_stem = trace_file.stem
         parts = filename_stem.split("_")
         device_profile = parts[0]
-        scenario = "_".join(parts[1:]) if len(parts) > 1 else ""
-        analyze_trace(trace_file, device_profile, scenario)
+        summary = analyze_trace(trace_file, device_profile)
+        summaries[device_profile] = summary
+
+    # Generate a single consolidated report
+    generate_consolidated_report(summaries, folder_name)
