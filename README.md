@@ -1,6 +1,29 @@
 # ue-insights-analyzer
 Tool to generate analytical reports from Unreal Insights CSVs powered by LLM models to improve performance
 
+## Prerequisites
+
+- Python 3.10 or higher
+- pip (Python package manager)
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/anksank/ue-insights-analyzer.git
+cd ue-insights-analyzer
+```
+
+2. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+Or install as a package:
+```bash
+pip install -e .
+```
+
 ## Input Folder Setup
 
 The input folder should be organized as follows:
