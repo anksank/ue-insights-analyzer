@@ -1,8 +1,0 @@
-{
-    "profiles": {
-        "default": {
-            "expected_fps": 60,
-            "frame_budget_ms": 16.67
-        }
-    }
-}

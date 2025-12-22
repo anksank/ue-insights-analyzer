@@ -1,0 +1,52 @@
+{
+    "performance_metadata": [
+        "FEngineLoop::Tick",
+        "BeginFrame",
+        "GameEngine Tick",
+        "Slate::Tick (Time and Widgets)",
+        "Frame Sync Time",
+        "STAT_FEngineLoop_UpdateTimeAndHandleMaxTickRate"
+    ],
+    "critical_event_metadata": [
+        "Tick Time",
+        "Slate::Tick (Time and Widgets)",
+        "Frame Sync Time",
+        "RedrawViewports",
+        "STAT_FEngineLoop_Tick_SlateInput",
+        "Net Tick Time"
+    ],
+    "tick_metrics": [
+        "Char Movement Total",
+        "USkinnedMeshComponent_TickComponent",
+        "AnimGameThreadTime",
+        "PlayerController Tick",
+        "FStartPhysicsTickFunction_ExecuteTick",
+        "Game TaskGraph Stalls"
+    ],
+    "game_thread_metadata": [
+        "STAT_FEngineLoop_UpdateTimeAndHandleMaxTickRate",
+        "STAT_FEngineLoop_TickFPSChart",
+        "FStats::AdvanceFrame",
+        "STAT_FEngineLoop_Tick_SlateInput",
+        "ProcessAsyncLoading",
+        "Net Tick Time",
+        "Queue Ticks",
+        "Tick Time",
+        "GT Tickable Time",
+        "Update Camera Time",
+        "UpdateStreamingState Time",
+        "Tick Time",
+        "bDoingActorTicks",
+        "NetBroadcastTickTime",
+        "TickableGameObjects Time",
+        "STAT_Media_TickRender",
+        "GameViewport Tick",
+        "RedrawViewports",
+        "STAT_UGameEngine_Tick_IStreamingManager",
+        "STAT_FEngineLoop_ProcessPlayerControllersSlateOperations",
+        "Slate::Tick (Platform and Input)",
+        "Slate::Tick (Time and Widgets)",
+        "Frame Sync Time",
+        "Deferred Tick Time"
+    ]
+}

@@ -1,0 +1,124 @@
+{
+    "base": {
+        "FEngineLoop::Tick": {
+            "Frame": {
+                "FrameTime": {
+                    "GameEngine Tick": {
+                        "UWorld_Tick": {
+                            "World Tick Time": {
+                                "Tick Time": {
+                                    "TG_PrePhysics": {},
+                                    "Start TG_DuringPhysics": {},
+                                    "TG_PostPhysics": {},
+                                    "TG_StartPhysics": {},
+                                    "TG_EndPhysics": {},
+                                    "Niagara Manager Tick [GT]": {},
+                                    "TG_PostUpdateWork": {},
+                                    "TG_LastDemotable": {}
+                                },
+                                "Net Tick Time": {},
+                                "bDoingActorTicks": {},
+                                "GT Tickable Time": {}
+                            }
+                        }
+                    },
+                    "Slate::Tick (Time and Widgets)": {
+                        "Total Slate Tick Time": {
+                            "Slate::DrawWindows": {},
+                            "PreTickEvent": {},
+                            "Slate::TickPlatform": {},
+                            "Flush End of Frame Animations": {}
+                        }
+                    },
+                    "Frame Sync Time": {}
+                }
+            }
+        },
+        "BeginFrame": {
+            "FDrawSceneCommand": {
+                "RenderViewFamily": {
+                    "STAT_FMobileSceneRenderer_Render": {
+                        "InitViews": {},
+                        "FinishRenderViewTarget": {},
+                        "STAT_ComputeLightGrid": {},
+                        "ShaderPrint::BeginView": {},
+                        "DeferredShadingSceneRenderer ViewExtensionPostRenderView": {}
+                    },
+                    "EndFlushResourcesRHI": {},
+                    "Scene::UpdateAllPrimitiveSceneInfos": {},
+                    "FRDGBuilder::ExecutePasses": {},
+                    "Collect Resources": {},
+                    "FRDGBuilder::SubmitBufferUploads": {},
+                    "FRDGBuilder::CreateUniformBuffers": {},
+                    "BeginFlushResourcesRHI": {},
+                    "Compile": {}
+                },
+                "STAT_RenderViewFamily_RenderThread_RHIGetGPUFrameCycles": {},
+                "FRDGAllocator::ReleaseAll": {}
+            },
+            "SlateDrawWindowsCommand": {},
+            "SkelMeshObjectUpdateDataCommand": {},
+            "DrawWidgetRendererImmediate": {},
+            "UpdateTransformCommand": {},
+            "HeartbeatTickTickables": {},
+            "EndFrame": {},
+            "ResetDeferredUpdates": {},
+            "BeginRenderingDebugCanvas": {},
+            "SetMIParameterValue": {},
+            "NiagaraSetDynamicData": {},
+            "TickRenderingTimer": {},
+            "RenderingFrame": {},
+            "FRemovePrimitiveCommand": {}
+        },
+        "RHI Thread Execute": {
+            "SceneEnd": {},
+            "Opaque": {},
+            "Post": {},
+            "After Occlusion Readback": {},
+            "Occlusion": {},
+            "Translucency": {},
+            "SceneStart": {},
+            "Shadows": {},
+            "SceneSimulation": {},
+            "InitViews": {
+                "View Visibility": {
+                    "ProcessVisibilityTasks": {
+                        "WaitUntilTasksComplete": {
+                            "ExecuteTask": {
+                                "FTickFunctionTask": {},
+                                "FParallelAnimationCompletionTask": {},
+                                "FNiagaraSystemInstanceFinalizeTask": {},
+                                "FSimpleDelegateGraphTask.FinishPhysicsSim": {}
+                            }
+                        },
+                        "ParallelFor": {},
+                        "OcclusionCull": {},
+                        "BeginInitVisibility 0": {},
+                        "FinalizeRelevance": {},
+                        "GatherDynamicMeshElements": {},
+                        "OcclusionSubmittedFence Wait": {},
+                        "MergeSecondaryViewVisibility": {},
+                        "Update Fading": {}
+                    }
+                },
+                "FinishVisibility": {},
+                "STAT_UpdateIndirectLightingCacheBuffer": {},
+                "ParallelMdcDispatchPassSetup": {},
+                "FinishDynamicMeshElements": {},
+                "FLandscapeSceneViewExtension::PreInitViews_RenderThread": {},
+                "GPU Dispatch Setup [RT]": {},
+                "STAT_SetupCommonViewUniformBufferParameters": {},
+                "Uniform commit time": {},
+                "STAT_PostVisibilityFrameSetup": {},
+                "FInstanceCullingManager::BeginDeferredCulling": {},
+                "Constant buffer update time": {}
+            },
+            "FXPreRender_Finalize": {},
+            "FXPreRender_Prepare": {},
+            "FXPreRender_Simulate": {},
+            "PrePass": {},
+            "AfterInitViews": {},
+            "Occlusion Readback": {}
+        }
+    }
+}
