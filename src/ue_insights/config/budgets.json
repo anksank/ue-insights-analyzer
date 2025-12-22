@@ -16,7 +16,7 @@
                 "FEngineLoop::Tick": 33.33
             }
         },
-        "low1": {
+        "low0": {
             "expected_fps": 30,
             "frame_budget_ms": 33.33,
             "critical_budget_ms": 29.0,
@@ -32,7 +32,7 @@
                 "FEngineLoop::Tick": 33.33
             }
         },
-        "low2": {
+        "low1": {
             "expected_fps": 45,
             "frame_budget_ms": 22.22,
             "critical_budget_ms": 19.33,

@@ -22,6 +22,7 @@ def run_pipeline(
     # fetch the budgets for current device profile
     full_budget_config = load_json_config("budgets.json")
 
+    device_profile = device_profile.lower()
     event_budgets = full_budget_config["profiles"][device_profile]["events"]
     fps_target = full_budget_config["profiles"][device_profile]["expected_fps"]
 

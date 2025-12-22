@@ -9,20 +9,20 @@ Tool to generate analytical reports from Unreal Insights CSVs powered by LLM mod
 ## Installation
 
 1. Clone the repository:
-```bash
-git clone https://github.com/anksank/ue-insights-analyzer.git
-cd ue-insights-analyzer
-```
+    ```bash
+    git clone https://github.com/anksank/ue-insights-analyzer.git
+    cd ue-insights-analyzer
+    ```
 
 2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 Or install as a package:
-```bash
-pip install -e .
-```
+    ```bash
+    pip install -e .
+    ```
 
 ## Input Folder Setup
 
@@ -58,7 +58,7 @@ python run_analysis.py <folder_path>
 
 **Example:**
 ```bash
-python scripts/run_analysis.py data/input_csv/20251122_Automation
+python scripts/run_analysis.py data/input_csv/20251215_Manual
 ```
 
 ## Output
