@@ -7,7 +7,7 @@ from .events import EventTiming
 class TraceSummary:
     device_profile: str
     fps_target: int
-    top_violations: list[EventTiming]
     critical_events: list[EventTiming]
+    tick_events: list[EventTiming]
     regressions: dict[str, float]
     improvements: dict[str, float]

@@ -11,7 +11,9 @@
                 "RedrawViewports": 2.33,
                 "Frame Sync Time": 5.0,
                 "Net Tick Time": 3.33,
-                "STAT_FEngineLoop_Tick_SlateInput": 1.67
+                "STAT_FEngineLoop_Tick_SlateInput": 1.67,
+                "BeginFrame": 33.33,
+                "FEngineLoop::Tick": 33.33
             }
         },
         "mid": {
@@ -25,7 +27,9 @@
                 "RedrawViewports": 1.55,
                 "Frame Sync Time": 3.33,
                 "Net Tick Time": 2.22,
-                "STAT_FEngineLoop_Tick_SlateInput": 1.11
+                "STAT_FEngineLoop_Tick_SlateInput": 1.11,
+                "BeginFrame": 22.22,
+                "FEngineLoop::Tick": 22.22
             }
         },
         "high": {
@@ -39,7 +43,9 @@
                 "RedrawViewports": 1.16,
                 "Frame Sync Time": 2.5,
                 "Net Tick Time": 1.67,
-                "STAT_FEngineLoop_Tick_SlateInput": 0.84
+                "STAT_FEngineLoop_Tick_SlateInput": 0.84,
+                "BeginFrame": 16.67,
+                "FEngineLoop::Tick": 16.67
             }
         },
         "ultra": {
@@ -53,7 +59,9 @@
                 "RedrawViewports": 0.78,
                 "Frame Sync Time": 1.67,
                 "Net Tick Time": 1.11,
-                "STAT_FEngineLoop_Tick_SlateInput": 0.56
+                "STAT_FEngineLoop_Tick_SlateInput": 0.56,
+                "BeginFrame": 11.11,
+                "FEngineLoop::Tick": 11.11
             }
         }
     }

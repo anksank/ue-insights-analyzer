@@ -1,19 +1,13 @@
 {
-    "performance_metadata": [
-        "FEngineLoop::Tick",
-        "BeginFrame",
-        "GameEngine Tick",
-        "Slate::Tick (Time and Widgets)",
-        "Frame Sync Time",
-        "STAT_FEngineLoop_UpdateTimeAndHandleMaxTickRate"
-    ],
     "critical_event_metadata": [
-        "Tick Time",
-        "Slate::Tick (Time and Widgets)",
-        "Frame Sync Time",
-        "RedrawViewports",
+        "BeginFrame",
+        "FEngineLoop::Tick",
         "STAT_FEngineLoop_Tick_SlateInput",
-        "Net Tick Time"
+        "Tick Time",
+        "Net Tick Time",
+        "RedrawViewports",
+        "Slate::Tick (Time and Widgets)",
+        "Frame Sync Time"
     ],
     "tick_metrics": [
         "Char Movement Total",

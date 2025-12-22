@@ -19,7 +19,7 @@ def get_event_count(df, event_name_inner: str) -> int:
         raise ValueError(f"Event '{event_name_inner}' not found in dataframe")
 
 
-def main(in_trace_file, device_profile):
+def main(in_trace_file, device_profile, scenario):
     # Load CSV
     df = load_trace_csv(in_trace_file)
 
@@ -37,36 +37,47 @@ def main(in_trace_file, device_profile):
     )
 
     print("\nPipeline Summary:")
-    print(f"Top Violations: {len(summary.top_violations)}")
-    for v in summary.top_violations:
-        print(
-            f" - {v.name}: {v.frame_time_ms:.2f}ms (Budget: {v.budget_ms:.2f}ms, Over: {v.over_budget_ms:.2f}ms)"
-        )
-
     for v in summary.critical_events:
         print(
             f" - {v.name}: {v.frame_time_ms:.2f}ms (Budget: {v.budget_ms:.2f}ms, Over: {v.over_budget_ms:.2f}ms)"
         )
 
     # Generate Markdown report for violations
-    markdown_report_path = "violations_report.md"
+    input_csv_name = Path(in_trace_file).stem
+    reports_dir = project_root / "data" / "reports"
+    reports_dir.mkdir(parents=True, exist_ok=True)
+    markdown_report_path = reports_dir / f"{input_csv_name}_performance_report.md"
     with open(markdown_report_path, "w", encoding="utf-8") as f:
-        f.write("# Performance report for {in_trace_file}\n\n")
+        f.write("# Performance report for {input_csv_name} [{scenario}]\n\n")
+        f.write("## Summary of Critical Events\n")
         f.write("| Event Name | Frame Time (ms) | Budget (ms) | Over Budget (ms) |\n")
         f.write("| :--- | :---: | :---: | :---: |\n")
-        for v in summary.top_violations:
+        for v in summary.critical_events:
             f.write(
                 f"| {v.name} | {v.frame_time_ms:.2f} | {v.budget_ms:.2f} | {v.over_budget_ms:.2f} |\n"
             )
+        f.write("\n")
+        f.write("## Summary of Tick Related Events\n")
+        f.write("| Event Name | Frame Time (ms) |\n")
+        f.write("| :--- | :---: |\n")
+        for v in summary.tick_events:
+            f.write(f"| {v.name} | {v.frame_time_ms:.2f} |\n")
 
-    print(f"Markdown violations report generated: {markdown_report_path}")
+    print(f"Performance report generated: {markdown_report_path}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: py stats.py <trace_file> <target_FPS -low/mid/high/ultra>")
+        print(
+            "Usage: py run_analysis.py <trace_file (yyyymmdd_deviceprofile_scenario.csv)>"
+        )
         sys.exit(1)
 
     trace_file = sys.argv[1]
-    target_fps = sys.argv[2]
-    main(trace_file, target_fps)
+    # Parse filename: yyyymmdd_deviceprofile_scenario.csv
+    filename_stem = Path(trace_file).stem
+    parts = filename_stem.split("_")
+    trace_date = parts[0]
+    device_profile = parts[1]
+    scenario = "_".join(parts[2:]) if len(parts) > 2 else ""
+    main(trace_file, device_profile, scenario)

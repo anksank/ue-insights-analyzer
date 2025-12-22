@@ -13,33 +13,23 @@ def run_pipeline(
     llm_client=None,
     device_profile="unknown",
 ):
+    # load the utrace csv file
     df = load_trace_csv(csv_path)
+
+    # normalize the frame times to ms
     df = normalize_to_ms(df, frame_count)
 
-    # start logic to apply budgets and highlight violations
+    # fetch the budgets for current device profile
     full_budget_config = load_json_config("budgets.json")
 
     event_budgets = full_budget_config["profiles"][device_profile]["events"]
     fps_target = full_budget_config["profiles"][device_profile]["expected_fps"]
 
+    # apply the budgets to the dataframe
     df = apply_budgets(df, event_budgets)
 
-    violations = df[df["over_budget"]].sort_values("over_budget_ms", ascending=False)
-
-    top_violations = []
-    for _, row in violations.iterrows():
-        top_violations.append(
-            EventTiming(
-                name=row["Name"],
-                frame_time_ms=row["frame_time_ms"],
-                budget_ms=row["budget_ms"],
-                over_budget_ms=row["over_budget_ms"],
-            )
-        )
-    # end logic to apply budgets and highlight violations
-
-    # start logic to generate critical event summary
-    critical_events = load_json_config("perf_metadata.json")["performance_metadata"]
+    # START_LOGIC to generate critical event summary along with violations
+    critical_events = load_json_config("perf_metadata.json")["critical_event_metadata"]
     critical_events_df = df[df["Name"].isin(critical_events)]
 
     critical_events_summary = []
@@ -52,13 +42,29 @@ def run_pipeline(
                 over_budget_ms=row["over_budget_ms"],
             )
         )
-    # end logic to generate critical event summary
+    # END_LOGIC to generate critical event summary along with violations
+
+    # START_LOGIC to generate tick event summary
+    tick_events = load_json_config("perf_metadata.json")["tick_metrics"]
+    tick_events_df = df[df["Name"].isin(tick_events)]
+
+    tick_events_summary = []
+    for _, row in tick_events_df.iterrows():
+        tick_events_summary.append(
+            EventTiming(
+                name=row["Name"],
+                frame_time_ms=row["frame_time_ms"],
+                budget_ms=None,
+                over_budget_ms=None,
+            )
+        )
+    # END_LOGIC to generate tick event summary
 
     summary = TraceSummary(
         device_profile=device_profile,
         fps_target=fps_target,
-        top_violations=top_violations,
         critical_events=critical_events_summary,
+        tick_events=tick_events_summary,
         regressions={},
         improvements={},
     )
