@@ -46,13 +46,18 @@ def analyze_trace(in_trace_file, device_profile):
 
 
 def generate_consolidated_report(summaries, folder_name):
-    """Generate a single markdown report for all device profiles."""
+    """Generate a single markdown report for all device profiles.
+
+    Args:
+        summaries: dict mapping (device_name, device_profile) tuples to TraceSummary objects
+        folder_name: name of the folder for report title
+    """
     reports_dir = project_root / "data" / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
     markdown_report_path = reports_dir / f"{folder_name}_performance_report.md"
 
-    # Get ordered list of device profiles and event names
-    device_profiles = list(summaries.keys())
+    # Get ordered list of keys and event names
+    summary_keys = list(summaries.keys())
 
     # Get critical event names from first summary (assuming all have same events)
     first_summary = next(iter(summaries.values()))
@@ -71,46 +76,62 @@ def generate_consolidated_report(summaries, folder_name):
 
         # Critical Events Table - Frame Time (with color coding)
         f.write("## Critical Events - Frame Time (ms)\n")
-        f.write("| Device Profile | " + " | ".join(critical_event_names) + " |\n")
         f.write(
-            "| :---: | " + " | ".join([":---:"] * len(critical_event_names)) + " |\n"
+            "| Device Profile | Device Name | "
+            + " | ".join(critical_event_names)
+            + " |\n"
         )
-        for device_profile in device_profiles:
-            summary = summaries[device_profile]
+        f.write(
+            "| :---: | :--- | "
+            + " | ".join([":---:"] * len(critical_event_names))
+            + " |\n"
+        )
+        for device_name, device_profile in summary_keys:
+            summary = summaries[(device_name, device_profile)]
             times = {v.name: v.frame_time_ms for v in summary.critical_events}
             over = {v.name: v.over_budget_ms for v in summary.critical_events}
             row = [
                 format_with_color(times.get(name, 0), over.get(name, 0))
                 for name in critical_event_names
             ]
-            f.write(f"| {device_profile} | " + " | ".join(row) + " |\n")
+            f.write(f"| {device_profile} | {device_name} | " + " | ".join(row) + " |\n")
         f.write("\n")
 
         # Critical Events Table - Over Budget (with color coding)
         f.write("## Critical Events - Over Budget (ms)\n")
-        f.write("| Device Profile | " + " | ".join(critical_event_names) + " |\n")
         f.write(
-            "| :---: | " + " | ".join([":---:"] * len(critical_event_names)) + " |\n"
+            "| Device Profile | Device Name | "
+            + " | ".join(critical_event_names)
+            + " |\n"
         )
-        for device_profile in device_profiles:
-            summary = summaries[device_profile]
+        f.write(
+            "| :---: | :--- | "
+            + " | ".join([":---:"] * len(critical_event_names))
+            + " |\n"
+        )
+        for device_name, device_profile in summary_keys:
+            summary = summaries[(device_name, device_profile)]
             over = {v.name: v.over_budget_ms for v in summary.critical_events}
             row = [
                 format_with_color(over.get(name, 0), over.get(name, 0))
                 for name in critical_event_names
             ]
-            f.write(f"| {device_profile} | " + " | ".join(row) + " |\n")
+            f.write(f"| {device_profile} | {device_name} | " + " | ".join(row) + " |\n")
         f.write("\n")
 
         # Tick Events Table (no color - no budget for tick events)
         f.write("## Tick Related Events - Frame Time (ms)\n")
-        f.write("| Device Profile | " + " | ".join(tick_event_names) + " |\n")
-        f.write("| :---: | " + " | ".join([":---:"] * len(tick_event_names)) + " |\n")
-        for device_profile in device_profiles:
-            summary = summaries[device_profile]
+        f.write(
+            "| Device Profile | Device Name | " + " | ".join(tick_event_names) + " |\n"
+        )
+        f.write(
+            "| :---: | :--- | " + " | ".join([":---:"] * len(tick_event_names)) + " |\n"
+        )
+        for device_name, device_profile in summary_keys:
+            summary = summaries[(device_name, device_profile)]
             times = {v.name: v.frame_time_ms for v in summary.tick_events}
             row = [f"{times.get(name, 0):.2f}" for name in tick_event_names]
-            f.write(f"| {device_profile} | " + " | ".join(row) + " |\n")
+            f.write(f"| {device_profile} | {device_name} | " + " | ".join(row) + " |\n")
 
     print(f"Consolidated performance report generated: {markdown_report_path}")
 
@@ -124,13 +145,21 @@ if __name__ == "__main__":
     folder_name = folder_path.name
 
     # Collect summaries from all CSV files
+    # Filename format: deviceName_deviceProfile.csv (split on last underscore)
     summaries = {}
     for trace_file in folder_path.glob("*.csv"):
         filename_stem = trace_file.stem
-        parts = filename_stem.split("_")
-        device_profile = parts[0]
+        # Split on last underscore to get device_name and device_profile
+        last_underscore_idx = filename_stem.rfind("_")
+        if last_underscore_idx != -1:
+            device_name = filename_stem[:last_underscore_idx]
+            device_profile = filename_stem[last_underscore_idx + 1 :]
+        else:
+            device_name = filename_stem
+            device_profile = "unknown"
+
         summary = analyze_trace(trace_file, device_profile)
-        summaries[device_profile] = summary
+        summaries[(device_name, device_profile)] = summary
 
     # Generate a single consolidated report
     generate_consolidated_report(summaries, folder_name)
